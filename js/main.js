@@ -46,7 +46,8 @@ const titles = {
   emailtool: 'Smart Email Tool',
   bulkcheck: 'Bulk Domain Checker',
   extractor: 'Domain Extractor', texttools: 'Text Tools', emailextractor: 'Email Extractor',
-  newsdomain: 'Gen Domain News'
+  newsdomain: 'Gen Domain News',
+  toolsoverview: 'All Tools Overview'
 };
 
 // Tools that show filter controls
@@ -1340,5 +1341,21 @@ export async function initApp() {
   if (savedProvBtn) {
     $$('.ai-provider-btn').forEach(b => b.classList.remove('active'));
     savedProvBtn.classList.add('active');
+  }
+
+  // Tools Overview - "Use Tool" buttons
+  $$('.tool-overview-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tool = btn.dataset.tool;
+      if (tool) switchTool(tool);
+    });
+  });
+
+  // Tools Overview - CTA button
+  const btnStartUsingTools = $('#btnStartUsingTools');
+  if (btnStartUsingTools) {
+    btnStartUsingTools.addEventListener('click', () => {
+      switchTool('geo');
+    });
   }
 }
