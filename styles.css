@@ -203,7 +203,8 @@ input,select,textarea{font-family:inherit;color:var(--text-input)}
 .wordlist-separator svg{width:18px;height:18px;color:var(--text-tertiary)}
 
 /* Results */
-.results-section{padding:28px 20px;max-width:1100px;margin:0 auto}
+.results-section{padding:28px 20px;max-width:1100px;margin:0 auto;display:none}
+.results-section.visible{display:block}
 .results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
 .results-info h2{font-family:var(--font-primary);font-size:1.1rem;font-weight:700}
 .results-count{font-size:.75rem;color:var(--text-tertiary)}
