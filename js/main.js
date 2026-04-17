@@ -47,8 +47,7 @@ const titles = {
   emailtool: 'Smart Email Tool',
   bulkcheck: 'Bulk Domain Checker',
   extractor: 'Domain Extractor', texttools: 'Text Tools', emailextractor: 'Email Extractor',
-  newsdomain: 'Gen Domain News',
-  toolsoverview: 'All Tools Overview'
+  newsdomain: 'Gen Domain News'
 };
 
 // Tools that show filter controls
@@ -1372,7 +1371,8 @@ export async function initApp() {
   const btnHomeViewTools = $('#btnHomeViewTools');
   if (btnHomeViewTools) {
     btnHomeViewTools.addEventListener('click', () => {
-      switchTool('toolsoverview');
+      // Navigate to generators section as overview was removed
+      switchTool('geo');
     });
   }
 }
