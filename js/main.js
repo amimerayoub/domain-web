@@ -85,6 +85,27 @@ function switchTool(tool) {
   });
   const nt = $('#navbarTitle');
   if (nt) nt.textContent = titles[tool] || 'AI Domain Generator';
+  
+  // Show/hide results section based on tool
+  const resultsSection = $('#resultsSection');
+  if (resultsSection) {
+    if (tool === 'home') {
+      resultsSection.classList.remove('visible');
+    } else {
+      resultsSection.classList.add('visible');
+    }
+  }
+  
+  // Update navbar title visibility for home
+  const navbarTitle = $('#navbarTitle');
+  if (navbarTitle) {
+    if (tool === 'home') {
+      navbarTitle.style.display = 'none';
+    } else {
+      navbarTitle.style.display = '';
+    }
+  }
+  
   showFilterControls(toolsWithFilters.includes(tool));
 }
 
