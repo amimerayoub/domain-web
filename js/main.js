@@ -13,7 +13,7 @@ import { loadAllApiKeys, saveAllApiKeys, loadAiProvider, saveAiProvider } from '
 
 // State
 const state = {
-  activeTool: 'geo',
+  activeTool: 'home',
   domains: [],
   limit: 50,
   smartMode: true
@@ -39,6 +39,7 @@ const AI_PROVIDER_HINTS = {
 };
 
 const titles = {
+  home: 'AI Domain Generator',
   geo: 'Geo Domain Generator', keyword: 'Keyword Domain Generator',
   pattern: 'Pattern Domain Generator', brandable: 'Brandable Name Generator',
   numeric: 'Numeric Domain Generator', suggestor: 'Domain Suggestor',
@@ -1316,7 +1317,7 @@ export async function initApp() {
   });
 
   if (loading) loading.classList.remove('active');
-  switchTool('geo');
+  switchTool('home');
 
   // Auto-load all saved API keys into all inputs
   const savedKeys = loadAllApiKeys();
@@ -1356,6 +1357,22 @@ export async function initApp() {
   if (btnStartUsingTools) {
     btnStartUsingTools.addEventListener('click', () => {
       switchTool('geo');
+    });
+  }
+
+  // Home page - Start Generating button
+  const btnHomeStartGenerating = $('#btnHomeStartGenerating');
+  if (btnHomeStartGenerating) {
+    btnHomeStartGenerating.addEventListener('click', () => {
+      switchTool('geo');
+    });
+  }
+
+  // Home page - View All Tools button
+  const btnHomeViewTools = $('#btnHomeViewTools');
+  if (btnHomeViewTools) {
+    btnHomeViewTools.addEventListener('click', () => {
+      switchTool('toolsoverview');
     });
   }
 }

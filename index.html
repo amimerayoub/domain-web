@@ -32,8 +32,15 @@
     </div>
 
     <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a href="#" class="nav-item active" data-tool="home">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Home</span>
+      </a>
+
+      <div class="nav-divider"></div>
       <div class="nav-section-label">Generators</div>
-      <a href="#" class="nav-item active" data-tool="geo">
+      <a href="#" class="nav-item" data-tool="geo">
         <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.8"/></svg>
         <span>Geo Domains</span>
       </a>
@@ -142,8 +149,110 @@
       </div>
     </header>
 
+    <!-- ===== HOME PANEL ===== -->
+    <div class="tool-panel active" id="home-panel">
+      <div class="panel-container">
+        <div class="panel-hero">
+          <h1>AI Domain Generator Platform</h1>
+          <p>Your all-in-one solution for generating, analyzing, and monetizing premium domain names</p>
+        </div>
+
+        <!-- Quick Start Section -->
+        <div class="overview-section glass" style="margin-bottom:20px">
+          <div class="overview-header">
+            <svg viewBox="0 0 24 24" fill="none" style="width:20px;height:20px;color:var(--accent)"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <h2>Quick Start</h2>
+          </div>
+          <p class="overview-desc">Start generating domains in seconds with our powerful tools</p>
+          <div class="tools-grid">
+            <div class="tool-card glass">
+              <h4>Geo Domains</h4>
+              <p>Generate City + Service combinations ranked by population</p>
+              <button class="btn-action-sm tool-overview-btn" data-tool="geo">Use Tool</button>
+            </div>
+            <div class="tool-card glass">
+              <h4>Keyword Domains</h4>
+              <p>Combine keywords with smart prefixes and suffixes</p>
+              <button class="btn-action-sm tool-overview-btn" data-tool="keyword">Use Tool</button>
+            </div>
+            <div class="tool-card glass">
+              <h4>Brandable Names</h4>
+              <p>Create unique startup-ready brandable names</p>
+              <button class="btn-action-sm tool-overview-btn" data-tool="brandable">Use Tool</button>
+            </div>
+            <div class="tool-card glass">
+              <h4>Pattern Domains</h4>
+              <p>Generate pronounceable CVC/CVVC pattern names</p>
+              <button class="btn-action-sm tool-overview-btn" data-tool="pattern">Use Tool</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="overview-section glass" style="margin-bottom:20px">
+          <div class="overview-header">
+            <svg viewBox="0 0 24 24" fill="none" style="width:20px;height:20px;color:var(--accent)"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" stroke-width="2"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="2"/><path d="M9 14l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h2>Key Features</h2>
+          </div>
+          <div class="features-grid">
+            <div class="feature-card glass">
+              <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--accent)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.8"/></svg>
+              <h4>Multiple Generators</h4>
+              <p>Geo, Keyword, Pattern, Brandable, Numeric, and more generation modes</p>
+            </div>
+            <div class="feature-card glass">
+              <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--accent)"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <h4>Smart Analysis</h4>
+              <p>Analyze domains with SEO metrics, age, backlinks, CPC scoring</p>
+            </div>
+            <div class="feature-card glass">
+              <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--accent)"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <h4>Email Outreach</h4>
+              <p>Send personalized outreach campaigns with dynamic variables</p>
+            </div>
+            <div class="feature-card glass">
+              <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--accent)"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <h4>News-Based Generation</h4>
+              <p>AI analyzes real-time news trends to generate relevant domains</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="overview-section glass" style="margin-bottom:20px">
+          <div class="overview-header">
+            <svg viewBox="0 0 24 24" fill="none" style="width:20px;height:20px;color:var(--accent)"><path d="M9.663 17h4.674M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343 5.657l-.707-.707m2.828 2.828l-.707.707M12 12a4 4 0 100-8 4 4 0 000 8z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <h2>How It Works</h2>
+          </div>
+          <ol class="overview-steps">
+            <li><strong>Add API keys</strong> in Settings panel (Gemini/Grok required for AI features)</li>
+            <li><strong>Choose a generator</strong> from the sidebar navigation</li>
+            <li><strong>Configure options</strong> and generate domain suggestions</li>
+            <li><strong>Check availability</strong> for promising domains</li>
+            <li><strong>Take action</strong> — buy domains or send outreach emails</li>
+          </ol>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="overview-cta glass">
+          <h3>Ready to Get Started?</h3>
+          <p>Explore all available tools or start generating domains now</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn-generate" id="btnHomeStartGenerating">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Start Generating
+            </button>
+            <button class="btn-action" id="btnHomeViewTools">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              View All Tools
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== GEO PANEL ===== -->
-    <div class="tool-panel active" id="geo-panel">
+    <div class="tool-panel" id="geo-panel">
       <div class="panel-container">
         <div class="panel-hero"><h1>Geo Domain Generator</h1><p>Generate high-value City + Service domain combinations ranked by population</p></div>
         <div class="input-card glass">
