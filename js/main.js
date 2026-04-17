@@ -1020,7 +1020,8 @@ export async function initApp() {
     const html = document.documentElement;
     const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
-    document.body.classList.toggle('dark', next === 'dark');
+    document.body.classList.remove('dark', 'light');
+    document.body.classList.add(next);
   });
 
   // Favorites header button
