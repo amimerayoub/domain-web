@@ -88,11 +88,28 @@ function switchTool(tool) {
   
   // Show/hide results section based on tool
   const resultsSection = $('#resultsSection');
+  const resultsTitle = $('#resultsTitle');
   if (resultsSection) {
     if (tool === 'home') {
       resultsSection.classList.remove('visible');
     } else {
       resultsSection.classList.add('visible');
+      // Set appropriate title based on tool type
+      if (resultsTitle) {
+        if (tool === 'analyzer') {
+          resultsTitle.textContent = 'Analysis Results';
+        } else if (tool === 'bulkcheck') {
+          resultsTitle.textContent = 'Bulk Check Results';
+        } else if (tool === 'extractor' || tool === 'emailextractor') {
+          resultsTitle.textContent = tool === 'extractor' ? 'Extracted Domains' : 'Extracted Emails';
+        } else if (tool === 'emailtool') {
+          resultsTitle.textContent = 'Email Campaign';
+        } else if (tool === 'texttools') {
+          resultsTitle.textContent = 'Text Results';
+        } else {
+          resultsTitle.textContent = 'Generated Domains';
+        }
+      }
     }
   }
   
