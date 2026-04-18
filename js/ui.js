@@ -65,7 +65,7 @@ export function clearResults() {
     }, 200);
   }
   closeAllActionMenus();
-  const title = $('#resultsTitle'); if (title) title.textContent = 'Generated Domains';
+  // Title will be set dynamically based on active tool
   const count = $('#resultsCount'); if (count) count.textContent = '0 domains';
   const empty = $('#resultsEmpty'); if (empty) empty.style.display = 'block';
   const loading = $('#resultsLoading'); if (loading) loading.classList.remove('active');
