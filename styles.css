@@ -155,6 +155,13 @@ input,select,textarea{font-family:inherit;color:var(--text-input)}
 .custom-select-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-secondary);border:1px solid var(--glass-border);border-radius:var(--radius-sm);box-shadow:var(--shadow-md);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s cubic-bezier(.4,0,.2,1);z-index:9999;max-height:220px;overflow-y:auto;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .custom-select.open .custom-select-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
 .custom-select.open{z-index:1000}
+/* Portal dropdown - rendered at body level to avoid stacking context issues */
+.dropdown-portal{position:fixed;z-index:9999;display:block;pointer-events:auto;background:var(--bg-secondary);border:1px solid var(--glass-border);border-radius:var(--radius-sm);box-shadow:var(--shadow-md);max-height:220px;overflow-y:auto;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.dropdown-portal .select-option{padding:10px 14px;font-size:.85rem;color:var(--text-secondary);cursor:pointer;transition:var(--transition);border-bottom:1px solid var(--glass-border)}
+.dropdown-portal .select-option:last-child{border-bottom:none}
+.dropdown-portal .select-option:hover{background:var(--glass-bg-hover);color:var(--text-primary)}
+.dropdown-portal .select-option.active{color:var(--text-primary);font-weight:600;background:var(--glass-bg)}
+#dropdown-root{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
 .select-option{padding:10px 14px;font-size:.85rem;color:var(--text-secondary);cursor:pointer;transition:var(--transition);border-bottom:1px solid var(--glass-border)}
 .select-option:last-child{border-bottom:none}
 .select-option:hover{background:var(--glass-bg-hover);color:var(--text-primary)}
