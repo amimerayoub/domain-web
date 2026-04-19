@@ -239,18 +239,8 @@ async function handleGenDomains() {
   showLoading(true);
 
   try {
-    // Always read from localStorage (centralized — set via Settings panel or quick-save)
+    // Always read from localStorage (centralized — set via Settings panel)
     const apiKeys = loadAllApiKeys();
-
-    // Also check gen-news panel inputs as real-time override (un-saved values)
-    const overrides = {
-      gemini:     $('#genNewsGeminiKey')?.value.trim(),
-      mediastack: $('#genNewsMediastackKey')?.value.trim(),
-      gnews:      $('#genNewsGnewsKey')?.value.trim(),
-      newsapi:    $('#genNewsNewsapiKey')?.value.trim(),
-      currents:   $('#genNewsCurrentsKey')?.value.trim()
-    };
-    Object.entries(overrides).forEach(([k, v]) => { if (v) apiKeys[k] = v; });
 
     if (!apiKeys.gemini && !apiKeys.grok) {
       toast('API key required — open Settings to add Gemini or Grok key');
@@ -1124,17 +1114,16 @@ export async function initApp() {
   const btnGenDomains = $('#btnGenDomains');
   if (btnGenDomains) btnGenDomains.addEventListener('click', handleGenDomains);
 
-  // Save API keys button (quick save in gen-news panel)
-  const btnSaveKeys = $('#btnSaveNewsKeys');
-  if (btnSaveKeys) btnSaveKeys.addEventListener('click', () => {
-    saveAllApiKeys({
-      gemini:     $('#genNewsGeminiKey')?.value.trim() || '',
-      mediastack: $('#genNewsMediastackKey')?.value.trim() || '',
-      gnews:      $('#genNewsGnewsKey')?.value.trim() || '',
-      newsapi:    $('#genNewsNewsapiKey')?.value.trim() || '',
-      currents:   $('#genNewsCurrentsKey')?.value.trim() || ''
-    });
-    toast('API keys saved');
+  // Open API Settings button (in gen-news panel)
+  const btnOpenApiSettings = $('#btnOpenApiSettings');
+  if (btnOpenApiSettings) btnOpenApiSettings.addEventListener('click', () => {
+    settingsOverlay?.classList.add('open');
+  });
+
+  // How to get API keys button (in gen-news panel)
+  const btnHowToGetKeys = $('#btnHowToGetKeys');
+  if (btnHowToGetKeys) btnHowToGetKeys.addEventListener('click', () => {
+    getKeysOverlay?.classList.add('open');
   });
 
   // Generation Mode selector
@@ -1182,12 +1171,6 @@ export async function initApp() {
       currents:   $('#settingsCurrentsKey')?.value.trim() || ''
     };
     saveAllApiKeys(keys);
-    // Sync to gen-news panel inputs
-    if (keys.gemini     && $('#genNewsGeminiKey'))     $('#genNewsGeminiKey').value     = keys.gemini;
-    if (keys.mediastack && $('#genNewsMediastackKey')) $('#genNewsMediastackKey').value = keys.mediastack;
-    if (keys.gnews      && $('#genNewsGnewsKey'))      $('#genNewsGnewsKey').value      = keys.gnews;
-    if (keys.newsapi    && $('#genNewsNewsapiKey'))    $('#genNewsNewsapiKey').value    = keys.newsapi;
-    if (keys.currents   && $('#genNewsCurrentsKey'))   $('#genNewsCurrentsKey').value   = keys.currents;
     toast('All API keys saved');
     settingsOverlay?.classList.remove('open');
   });
@@ -1357,14 +1340,8 @@ export async function initApp() {
   if (loading) loading.classList.remove('active');
   switchTool('home');
 
-  // Auto-load all saved API keys into all inputs
+  // Auto-load all saved API keys into settings panel inputs
   const savedKeys = loadAllApiKeys();
-  // Gen Domain News panel inputs
-  if (savedKeys.gemini     && $('#genNewsGeminiKey'))     $('#genNewsGeminiKey').value     = savedKeys.gemini;
-  if (savedKeys.mediastack && $('#genNewsMediastackKey')) $('#genNewsMediastackKey').value = savedKeys.mediastack;
-  if (savedKeys.gnews      && $('#genNewsGnewsKey'))      $('#genNewsGnewsKey').value      = savedKeys.gnews;
-  if (savedKeys.newsapi    && $('#genNewsNewsapiKey'))    $('#genNewsNewsapiKey').value    = savedKeys.newsapi;
-  if (savedKeys.currents   && $('#genNewsCurrentsKey'))   $('#genNewsCurrentsKey').value   = savedKeys.currents;
   // Settings panel inputs
   if (savedKeys.gemini     && $('#settingsGeminiKey'))     $('#settingsGeminiKey').value     = savedKeys.gemini;
   if (savedKeys.grok       && $('#settingsGrokKey'))       $('#settingsGrokKey').value       = savedKeys.grok;
