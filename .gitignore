@@ -1,10 +1,9 @@
-```
+```gitignore
 # Compiled and build artifacts
 *.pyc
 __pycache__/
 *.o
 *.obj
-*.class
 *.exe
 *.dll
 *.so
@@ -29,24 +28,14 @@ venv/
 .vscode/
 .idea/
 
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# Build directories
-dist/
-build/
-target/
-.gradle/
-
-# Python specific
-.mypy_cache/
-.pytest_cache/
-
 # System files
 .DS_Store
 Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
 
 # Compressed files
 *.zip
@@ -71,4 +60,32 @@ Thumbs.db
 *.tar.bz2
 *.tar.xz
 *.tar.zst
+
+# Python specific
+*.pyo
+*.pyd
+*.egg-info/
+.Python
+*.so
+
+# Build systems
+build/
+dist/
+target/
+.gradle/
+.mypy_cache/
+.pytest_cache/
+*.egg
+
+# Temporary files
+*~
+.#*
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+*.tmp
+*.temp
+*.bak
+*.backup
 ```
