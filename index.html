@@ -656,7 +656,7 @@
         </div>
 
         <!-- Options -->
-        <div class="input-card glass" style="margin-bottom:14px">
+        <div class="input-card glass" style="margin-bottom:14px;overflow:visible">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
             <div class="form-row"><label class="form-label">Time Range</label>
               <div class="custom-select" id="genNewsTimeRange"><button class="custom-select-trigger"><span class="selected-text">Week</span><svg class="select-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="custom-select-dropdown"><div class="select-option" data-value="24h">Last 24h</div><div class="select-option active" data-value="week">This Week</div><div class="select-option" data-value="month">This Month</div></div></div>
@@ -669,8 +669,8 @@
             </div>
           </div>
           <div class="form-row"><label class="form-label">Keyword Filter (optional)</label><input type="text" class="input-primary" id="genNewsQuery" placeholder="e.g. AI, crypto, health..." style="font-size:.82rem;padding:8px 12px" /></div>
-          <div class="form-row"><label class="form-label">Number of Domains</label>
-            <div class="custom-select limit-select" id="genNewsCount"><button class="custom-select-trigger"><span class="selected-text">10</span><svg class="select-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="custom-select-dropdown"><div class="select-option" data-value="5">5</div><div class="select-option active" data-value="10">10</div><div class="select-option" data-value="20">20</div></div></div>
+          <div class="form-row" style="overflow:visible"><label class="form-label">Number of Domains</label>
+            <div class="custom-select limit-select" id="genNewsCount" style="position:relative;z-index:10"><button class="custom-select-trigger"><span class="selected-text">10</span><svg class="select-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="custom-select-dropdown"><div class="select-option" data-value="5">5</div><div class="select-option active" data-value="10">10</div><div class="select-option" data-value="20">20</div></div></div>
           </div>
         </div>
 
