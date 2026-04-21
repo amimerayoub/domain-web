@@ -454,16 +454,9 @@
           <div class="email-section-header">
             <span class="email-step-num">2</span>
             <h3>Subject Lines</h3>
-            <button class="btn-action-sm" id="btnAddSubject">
-              <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Add
-            </button>
           </div>
-          <div class="email-variations" id="subjectVariations">
-            <div class="email-var-input">
-              <input type="text" class="email-var-field" id="subjectInput1" placeholder="e.g. Quick question about {{domain}}" />
-            </div>
-          </div>
+          <p style="font-size:.75rem;color:var(--text-tertiary);margin-bottom:8px">Add multiple subject lines (one per line) for automatic rotation</p>
+          <textarea class="email-var-field" id="multipleSubjectsInput" rows="4" placeholder="Subject 1&#10;Subject 2&#10;Subject 3"></textarea>
         </div>
 
         <!-- Step 3: Message -->
@@ -471,21 +464,17 @@
           <div class="email-section-header">
             <span class="email-step-num">3</span>
             <h3>Message</h3>
-            <button class="btn-action-sm" id="btnAddMessage">
-              <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Add
-            </button>
           </div>
-          <div class="email-variations" id="messageVariations">
-            <div class="email-var-input">
-              <textarea class="email-msg-field" id="messageInput1" rows="5" placeholder="Hi {{name}},&#10;&#10;I noticed {{domain}} and wanted to reach out...&#10;&#10;Variables: {{domain}}, {{email}}, {{name}}"></textarea>
-            </div>
-          </div>
+          <p style="font-size:.75rem;color:var(--text-tertiary);margin-bottom:8px">Add multiple message variants separated by ---</p>
+          <textarea class="email-msg-field" id="multipleMessagesInput" rows="8" placeholder="Message version 1&#10;&#10;---&#10;&#10;Message version 2&#10;&#10;---&#10;&#10;Message version 3"></textarea>
           <!-- Variable chips -->
           <div class="email-var-chips">
             <span class="var-chip" data-var="{{domain}}">{{domain}}</span>
             <span class="var-chip" data-var="{{email}}">{{email}}</span>
             <span class="var-chip" data-var="{{name}}">{{name}}</span>
+            <span class="var-chip" data-var="{{price}}">{{price}}</span>
+            <span class="var-chip" data-var="{{cpc}}">{{cpc}}</span>
+            <span class="var-chip" data-var="{{backlinks}}">{{backlinks}}</span>
           </div>
         </div>
 
@@ -503,6 +492,16 @@
             <div class="email-preview-body" id="previewBody">
               Add a message above to see the preview here...
             </div>
+          </div>
+          <!-- Preview Navigation -->
+          <div class="email-preview-nav" style="display:flex;gap:8px;margin-top:10px;align-items:center">
+            <button class="btn-action-sm" id="btnPrevPreview" title="Previous variant">
+              <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <span style="font-size:.75rem;color:var(--text-tertiary)" id="previewIndexLabel">Variant 1 of 1</span>
+            <button class="btn-action-sm" id="btnNextPreview" title="Next variant">
+              <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
           </div>
         </div>
 

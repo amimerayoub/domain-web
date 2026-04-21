@@ -6,10 +6,11 @@ import { $, $$, pick, rand, shuffle } from './utils.js';
 // ============================================================
 export const emailState = {
   contacts: [],        // { email, domain, name, status }
-  subjects: [],        // subject variations
-  messages: [],        // message variations
+  subjects: [],        // subject variations (parsed from textarea)
+  messages: [],        // message variations (parsed from textarea)
   antiSpam: true,
   timing: 'normal',    // fast | normal | safe
+  previewIndex: 0,     // current preview index for navigation
   campaign: {
     running: false,
     paused: false,
@@ -148,7 +149,60 @@ export function replaceVariables(template, contact) {
     .replace(/\{\{domain\}\}/gi, contact.domain || '')
     .replace(/\{\{email\}\}/gi, contact.email || '')
     .replace(/\{\{name\}\}/gi, contact.name || 'there')
-    .replace(/\{\{first_name\}\}/gi, contact.name ? contact.name.split(' ')[0] : 'there');
+    .replace(/\{\{first_name\}\}/gi, contact.name ? contact.name.split(' ')[0] : 'there')
+    .replace(/\{\{price\}\}/gi, contact.price || '')
+    .replace(/\{\{cpc\}\}/gi, contact.cpc || '')
+    .replace(/\{\{backlinks\}\}/gi, contact.backlinks || '');
+}
+
+// ============================================================
+// MULTIPLE SUBJECTS/MESSAGES PARSING
+// ============================================================
+
+export function parseSubjects(text) {
+  if (!text || !text.trim()) return [];
+  return text
+    .split('\n')
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+}
+
+export function parseMessages(text) {
+  if (!text || !text.trim()) return [];
+  return text
+    .split('---')
+    .map(m => m.trim())
+    .filter(m => m.length > 0);
+}
+
+// ============================================================
+// ROTATION SYSTEM
+// ============================================================
+
+export function getSubjectForIndex(index, antiSpam = false) {
+  const subjects = emailState.subjects;
+  if (!subjects.length) return '';
+  
+  if (antiSpam && subjects.length > 1) {
+    // Random selection for anti-spam mode
+    return subjects[rand(0, subjects.length - 1)];
+  } else {
+    // Sequential rotation
+    return subjects[index % subjects.length];
+  }
+}
+
+export function getMessageForIndex(index, antiSpam = false) {
+  const messages = emailState.messages;
+  if (!messages.length) return '';
+  
+  if (antiSpam && messages.length > 1) {
+    // Random selection for anti-spam mode
+    return messages[rand(0, messages.length - 1)];
+  } else {
+    // Sequential rotation
+    return messages[index % messages.length];
+  }
 }
 
 // ============================================================
@@ -234,22 +288,9 @@ function sendNext(onProgress, onComplete) {
   const contact = pending[0];
   emailState.campaign.currentIdx = emailState.contacts.indexOf(contact);
 
-  // Select subject and message
-  let subject = '';
-  let message = '';
-
-  if (emailState.antiSpam && emailState.subjects.length > 1) {
-    // Rotate: pick least used subject
-    subject = pick(emailState.subjects);
-  } else {
-    subject = emailState.subjects[0] || '';
-  }
-
-  if (emailState.antiSpam && emailState.messages.length > 1) {
-    message = pick(emailState.messages);
-  } else {
-    message = emailState.messages[0] || '';
-  }
+  // Select subject and message using rotation system
+  const subject = getSubjectForIndex(emailState.campaign.sent, emailState.antiSpam);
+  const message = getMessageForIndex(emailState.campaign.sent, emailState.antiSpam);
 
   // Replace variables
   const finalSubject = replaceVariables(subject, contact);
@@ -311,14 +352,47 @@ export function resetCampaign() {
 // PREVIEW
 // ============================================================
 
-export function generatePreview() {
+export function generatePreview(index = null) {
   if (!emailState.contacts.length || !emailState.subjects.length || !emailState.messages.length) {
     return { subject: '', message: '' };
   }
 
   const contact = emailState.contacts[0];
-  const subject = replaceVariables(pick(emailState.subjects), contact);
-  const message = replaceVariables(pick(emailState.messages), contact);
+  const useIndex = index !== null ? index : emailState.previewIndex;
+  
+  // Use rotation system for preview
+  const subject = replaceVariables(getSubjectForIndex(useIndex, false), contact);
+  const message = replaceVariables(getMessageForIndex(useIndex, false), contact);
 
-  return { subject, message, contact };
+  return { subject, message, contact, index: useIndex };
+}
+
+export function getPreviewInfo() {
+  const totalSubjects = emailState.subjects.length;
+  const totalMessages = emailState.messages.length;
+  const totalVariants = Math.max(totalSubjects, totalMessages, 1);
+  const currentIndex = emailState.previewIndex;
+  
+  return {
+    current: currentIndex + 1,
+    total: totalVariants,
+    subjects: totalSubjects,
+    messages: totalMessages
+  };
+}
+
+export function setPreviewIndex(index) {
+  const total = Math.max(emailState.subjects.length, emailState.messages.length, 1);
+  if (index < 0) index = total - 1;
+  if (index >= total) index = 0;
+  emailState.previewIndex = index;
+  return index;
+}
+
+export function nextPreview() {
+  return setPreviewIndex(emailState.previewIndex + 1);
+}
+
+export function prevPreview() {
+  return setPreviewIndex(emailState.previewIndex - 1);
 }

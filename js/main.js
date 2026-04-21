@@ -7,7 +7,7 @@ import { initCustomSelects, getSelectValue } from '../components/dropdown.js';
 import { closeAllActionMenus } from '../components/action-menu.js';
 import { initFavorites, openFavoritesPanel, setFavoritesChangeListener, getFavoritesCount, isFavorite, toggleFavorite } from './favorites.js';
 import { analyzeDomains, filterDomains, detectMode } from './domainAnalyzer.js';
-import { emailState, parseCSVText, parsePastedEmails, cleanContacts, startCampaign, pauseCampaign, resumeCampaign, stopCampaign, resetCampaign, generatePreview, getDelay } from './emailTool.js';
+import { emailState, parseCSVText, parsePastedEmails, cleanContacts, startCampaign, pauseCampaign, resumeCampaign, stopCampaign, resetCampaign, generatePreview, getDelay, parseSubjects, parseMessages, getSubjectForIndex, getMessageForIndex, getPreviewInfo, setPreviewIndex, nextPreview, prevPreview } from './emailTool.js';
 import { initCampaignManager } from './campaignManager.js';
 import { generateDomainNews, clearCache } from '../services/newsGenOrchestrator.js';
 import { loadAllApiKeys, saveAllApiKeys, loadAiProvider, saveAiProvider } from '../services/apiSettings.js';
@@ -582,8 +582,6 @@ function handleExtractEmails() {
 }
 
 // ==================== SMART EMAIL TOOL INIT ====================
-let emailSubjectCount = 1;
-let emailMsgCount = 1;
 
 function initEmailTool() {
   // Tabs
@@ -694,55 +692,24 @@ function initEmailTool() {
     updateEmailStats();
   });
 
-  // Add subject variation
-  const btnAddSubject = $('#btnAddSubject');
-  if (btnAddSubject) btnAddSubject.addEventListener('click', () => {
-    emailSubjectCount++;
-    const container = $('#subjectVariations');
-    if (!container) return;
-    const div = document.createElement('div');
-    div.className = 'email-var-input';
-    div.innerHTML = `<input type="text" class="email-var-field" id="subjectInput${emailSubjectCount}" placeholder="Subject variation ${emailSubjectCount}" />
-      <button class="btn-action-sm email-remove-var" data-target="subjectInput${emailSubjectCount}" style="flex-shrink:0;margin-top:4px">
-        <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>`;
-    container.appendChild(div);
-    div.querySelector('.email-remove-var').addEventListener('click', () => {
-      div.remove();
-      updatePreview();
-    });
-    div.querySelector('input').addEventListener('input', debounce(updatePreview, 300));
-    updatePreview();
-  });
+  // Multiple subjects textarea - auto preview on input
+  const multipleSubjectsInput = $('#multipleSubjectsInput');
+  if (multipleSubjectsInput) {
+    multipleSubjectsInput.addEventListener('input', debounce(updatePreview, 300));
+  }
 
-  // Add message variation
-  const btnAddMessage = $('#btnAddMessage');
-  if (btnAddMessage) btnAddMessage.addEventListener('click', () => {
-    emailMsgCount++;
-    const container = $('#messageVariations');
-    if (!container) return;
-    const div = document.createElement('div');
-    div.className = 'email-var-input';
-    div.innerHTML = `<textarea class="email-msg-field" id="messageInput${emailMsgCount}" rows="4" placeholder="Message variation ${emailMsgCount}"></textarea>
-      <button class="btn-action-sm email-remove-var" data-target="messageInput${emailMsgCount}" style="flex-shrink:0;margin-top:4px">
-        <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>`;
-    container.appendChild(div);
-    div.querySelector('.email-remove-var').addEventListener('click', () => {
-      div.remove();
-      updatePreview();
-    });
-    div.querySelector('textarea').addEventListener('input', debounce(updatePreview, 300));
-    updatePreview();
-  });
+  // Multiple messages textarea - auto preview on input
+  const multipleMessagesInput = $('#multipleMessagesInput');
+  if (multipleMessagesInput) {
+    multipleMessagesInput.addEventListener('input', debounce(updatePreview, 300));
+  }
 
   // Variable chips — insert into active textarea
   $$('.var-chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      // Find the focused or last active message textarea
       let ta = document.activeElement;
       if (!ta || !ta.classList.contains('email-msg-field')) {
-        ta = $('#messageInput1') || $('.email-msg-field');
+        ta = $('#multipleMessagesInput') || $('.email-msg-field');
       }
       if (ta) {
         const start = ta.selectionStart;
@@ -757,11 +724,23 @@ function initEmailTool() {
     });
   });
 
-  // First subject/message input listeners
-  const subj1 = $('#subjectInput1');
-  if (subj1) subj1.addEventListener('input', debounce(updatePreview, 300));
-  const msg1 = $('#messageInput1');
-  if (msg1) msg1.addEventListener('input', debounce(updatePreview, 300));
+  // Preview navigation buttons
+  const btnPrevPreview = $('#btnPrevPreview');
+  const btnNextPreview = $('#btnNextPreview');
+  
+  if (btnPrevPreview) {
+    btnPrevPreview.addEventListener('click', () => {
+      prevPreview();
+      updatePreview();
+    });
+  }
+  
+  if (btnNextPreview) {
+    btnNextPreview.addEventListener('click', () => {
+      nextPreview();
+      updatePreview();
+    });
+  }
 
   // Anti-spam toggle
   const antiSpam = $('#antiSpamToggle');
@@ -861,14 +840,17 @@ function collectEmailInputs() {
   emailState.subjects = [];
   emailState.messages = [];
 
-  $$('.email-var-field').forEach(input => {
-    const v = input.value.trim();
-    if (v) emailState.subjects.push(v);
-  });
-  $$('.email-msg-field').forEach(input => {
-    const v = input.value.trim();
-    if (v) emailState.messages.push(v);
-  });
+  // Parse subjects from textarea (one per line)
+  const subjectsText = $('#multipleSubjectsInput');
+  if (subjectsText) {
+    emailState.subjects = parseSubjects(subjectsText.value);
+  }
+
+  // Parse messages from textarea (separated by ---)
+  const messagesText = $('#multipleMessagesInput');
+  if (messagesText) {
+    emailState.messages = parseMessages(messagesText.value);
+  }
 }
 
 function processEmailContacts(contacts) {
@@ -983,8 +965,16 @@ function updatePreview() {
   const preview = generatePreview();
   const subjEl = $('#previewSubject');
   const bodyEl = $('#previewBody');
+  const indexLabel = $('#previewIndexLabel');
+  
   if (subjEl) subjEl.textContent = preview.subject || 'Add subjects above to preview';
   if (bodyEl) bodyEl.textContent = preview.message || 'Add a message above to see the preview here...';
+  
+  // Update preview index label
+  if (indexLabel) {
+    const info = getPreviewInfo();
+    indexLabel.textContent = `Variant ${info.current} of ${info.total}`;
+  }
 }
 
 // ==================== INIT ====================
