@@ -589,6 +589,220 @@
             <tbody id="emailTableBody"></tbody>
           </table>
         </div>
+
+        <!-- ===== CAMPAIGN MANAGER SECTION ===== -->
+        <div class="email-section" style="margin-top:20px;border-top:1px solid var(--glass-border);padding-top:20px">
+          <div class="email-section-header">
+            <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px;color:var(--accent)"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Campaign Manager</h3>
+          </div>
+          
+          <div class="campaign-manager-actions" style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+            <button class="btn-generate" id="btnCreateCampaign" style="padding:10px 18px;font-size:.82rem">
+              <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Create Campaign
+            </button>
+            <button class="btn-action-sm" id="btnViewCampaigns">
+              <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+              View Campaigns
+            </button>
+          </div>
+          
+          <!-- Campaign List Preview -->
+          <div class="campaign-list-preview glass" id="campaignListPreview" style="display:none">
+            <div class="campaign-preview-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <span style="font-size:.75rem;font-weight:600;color:var(--text-tertiary)">Recent Campaigns</span>
+              <span class="campaign-count" id="campaignCountBadge" style="font-size:.7rem;background:var(--bg-input);padding:2px 8px;border-radius:10px">0</span>
+            </div>
+            <div id="campaignQuickList" style="display:flex;flex-direction:column;gap:6px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CAMPAIGN FORM MODAL ===== -->
+    <div class="modal-overlay" id="campaignModalOverlay" style="display:none">
+      <div class="modal-content glass" style="max-width:520px;width:90%">
+        <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--glass-border)">
+          <h3 id="campaignModalTitle" style="font-family:var(--font-primary);font-size:1rem;font-weight:700">Create Campaign</h3>
+          <button class="btn-action-sm" id="btnCloseCampaignModal" style="width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        
+        <form id="campaignForm" style="display:flex;flex-direction:column;gap:12px">
+          <input type="hidden" id="campaignId" />
+          
+          <div>
+            <label style="display:block;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Campaign Name *</label>
+            <input type="text" id="campaignName" class="email-var-field" placeholder="e.g. Tech Startups Outreach" required style="width:100%" />
+          </div>
+          
+          <div>
+            <label style="display:block;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Domain *</label>
+            <input type="text" id="campaignDomain" class="email-var-field" placeholder="e.g. example.com" required style="width:100%" />
+          </div>
+          
+          <div>
+            <label style="display:block;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Target Email *</label>
+            <input type="email" id="campaignEmail" class="email-var-field" placeholder="e.g. contact@company.com" required style="width:100%" />
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label style="display:block;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Price (USD)</label>
+              <input type="text" id="campaignPrice" class="email-var-field" placeholder="e.g. $2,500" style="width:100%" />
+            </div>
+            <div>
+              <label style="display:block;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Backlinks</label>
+              <input type="text" id="campaignBacklinks" class="email-var-field" placeholder="e.g. 150" style="width:100%" />
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label style="display:block;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px">CPC</label>
+              <input type="text" id="campaignCpc" class="email-var-field" placeholder="e.g. $3.50" style="width:100%" />
+            </div>
+            <div>
+              <label style="display:block;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Status</label>
+              <select id="campaignStatus" class="email-var-field" style="width:100%">
+                <option value="draft">Draft</option>
+                <option value="active">Active</option>
+                <option value="sent">Sent</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          </div>
+          
+          <div>
+            <label style="display:block;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Notes</label>
+            <textarea id="campaignNotes" class="email-msg-field" placeholder="Additional notes about this campaign..." rows="3" style="width:100%;resize:vertical"></textarea>
+          </div>
+          
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button type="submit" class="btn-generate" style="flex:1;padding:10px 18px;font-size:.82rem">
+              <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2"/><path d="M17 21v-8H7v8M7 3v5h8" stroke="currentColor" stroke-width="2"/></svg>
+              Save Campaign
+            </button>
+            <button type="button" class="btn-action-sm" id="btnCancelCampaign" style="padding:10px 18px">Cancel</button>
+          </div>
+        </form>
+        
+        <div id="saveNotification" style="display:none;margin-top:10px;padding:8px 12px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);border-radius:var(--radius-sm);font-size:.75rem;font-weight:600;color:#4ade80;text-align:center">
+          <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px;vertical-align:middle;margin-right:6px"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M22 4L12 14.01l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Saved locally
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CAMPAIGN DETAILS MODAL ===== -->
+    <div class="modal-overlay" id="campaignDetailsModal" style="display:none">
+      <div class="modal-content glass" style="max-width:600px;width:90%">
+        <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--glass-border)">
+          <h3 style="font-family:var(--font-primary);font-size:1rem;font-weight:700">Campaign Details</h3>
+          <button class="btn-action-sm" id="btnCloseDetailsModal" style="width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        
+        <div id="campaignDetailsContent" style="display:flex;flex-direction:column;gap:14px">
+          <!-- Campaign Info -->
+          <div class="glass" style="padding:14px;border-radius:var(--radius-md);border:1px solid var(--glass-border)">
+            <h4 id="detailCampaignName" style="font-family:var(--font-primary);font-size:.95rem;font-weight:700;margin-bottom:8px"></h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.8rem">
+              <div>
+                <span style="color:var(--text-tertiary);font-size:.7rem">Domain</span>
+                <p id="detailDomain" style="font-weight:600;color:var(--text-primary)"></p>
+              </div>
+              <div>
+                <span style="color:var(--text-tertiary);font-size:.7rem">Target Email</span>
+                <p id="detailEmail" style="font-weight:600;color:var(--text-primary)"></p>
+              </div>
+              <div>
+                <span style="color:var(--text-tertiary);font-size:.7rem">Price</span>
+                <p id="detailPrice" style="font-weight:600;color:var(--accent)"></p>
+              </div>
+              <div>
+                <span style="color:var(--text-tertiary);font-size:.7rem">Status</span>
+                <p id="detailStatus" style="font-weight:600"></p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Metrics -->
+          <div class="glass" style="padding:14px;border-radius:var(--radius-md);border:1px solid var(--glass-border)">
+            <h4 style="font-family:var(--font-primary);font-size:.85rem;font-weight:700;margin-bottom:10px">Domain Metrics</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div style="padding:10px;background:var(--bg-input);border-radius:var(--radius-sm);text-align:center">
+                <span style="font-size:.65rem;color:var(--text-tertiary);text-transform:uppercase">Backlinks</span>
+                <p id="detailBacklinks" style="font-size:1.1rem;font-weight:800;color:var(--text-primary);margin-top:4px">-</p>
+              </div>
+              <div style="padding:10px;background:var(--bg-input);border-radius:var(--radius-sm);text-align:center">
+                <span style="font-size:.65rem;color:var(--text-tertiary);text-transform:uppercase">CPC</span>
+                <p id="detailCpc" style="font-size:1.1rem;font-weight:800;color:var(--text-primary);margin-top:4px">-</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Email Preview -->
+          <div class="glass" style="padding:14px;border-radius:var(--radius-md);border:1px solid var(--glass-border)">
+            <h4 style="font-family:var(--font-primary);font-size:.85rem;font-weight:700;margin-bottom:10px">Email Preview</h4>
+            <div style="background:var(--bg-input);border-radius:var(--radius-sm);padding:12px">
+              <div style="font-size:.75rem;color:var(--text-tertiary);margin-bottom:6px">Subject:</div>
+              <div id="previewSubjectLine" style="font-weight:600;margin-bottom:10px"></div>
+              <div style="font-size:.75rem;color:var(--text-tertiary);margin-bottom:6px">Body:</div>
+              <div id="previewEmailBody" style="font-size:.82rem;line-height:1.6;white-space:pre-wrap;color:var(--text-secondary)"></div>
+            </div>
+          </div>
+          
+          <!-- Notes -->
+          <div id="detailNotesWrap" style="display:none">
+            <h4 style="font-family:var(--font-primary);font-size:.85rem;font-weight:700;margin-bottom:8px">Notes</h4>
+            <p id="detailNotes" style="font-size:.8rem;line-height:1.6;color:var(--text-secondary);background:var(--bg-input);padding:10px;border-radius:var(--radius-sm)"></p>
+          </div>
+          
+          <!-- Actions -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+            <button class="btn-generate" id="btnSendGmail" style="flex:1;min-width:140px;padding:10px 18px;font-size:.82rem">
+              <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M22 4L12 13 2 4" stroke="currentColor" stroke-width="2"/></svg>
+              Send via Gmail
+            </button>
+            <button class="btn-action-sm" id="btnEditCampaign" style="padding:10px 18px">
+              <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2"/></svg>
+              Edit
+            </button>
+            <button class="btn-action-sm" id="btnDeleteCampaign" style="padding:10px 18px;color:#f87171">
+              <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CAMPAIGNS LIST MODAL ===== -->
+    <div class="modal-overlay" id="campaignsListModal" style="display:none">
+      <div class="modal-content glass" style="max-width:700px;width:90%;max-height:80vh;overflow-y:auto">
+        <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--glass-border);position:sticky;top:0;background:var(--bg-secondary);z-index:10">
+          <h3 style="font-family:var(--font-primary);font-size:1rem;font-weight:700">All Campaigns</h3>
+          <button class="btn-action-sm" id="btnCloseListModal" style="width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        
+        <div id="campaignsListContent" style="display:flex;flex-direction:column;gap:8px">
+          <!-- Campaign items will be rendered here -->
+        </div>
+        
+        <div id="noCampaignsMsg" style="display:none;text-align:center;padding:40px 20px">
+          <svg viewBox="0 0 24 24" fill="none" style="width:40px;height:40px;color:var(--text-tertiary);margin:0 auto 12px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:12px">No campaigns yet</p>
+          <button class="btn-generate" id="btnCreateFirstCampaign" style="padding:8px 16px;font-size:.8rem">
+            <svg viewBox="0 0 24 24" fill="none" style="width:12px;height:12px"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Create Your First Campaign
+          </button>
+        </div>
       </div>
     </div>
 
