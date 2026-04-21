@@ -8,16 +8,21 @@ const STORAGE_KEY = 'email_campaigns';
 let campaigns = [];
 let currentCampaignId = null;
 
-// Email template
+// Email template with multiple variants support
 const EMAIL_TEMPLATE = {
-  subject: 'Domain available for your business',
-  body: `Hello,
+  subjects: [
+    'Domain available for your business',
+    'Quick question about {{domain}}'
+  ],
+  messages: [
+    `Hello,
 
 I own the domain {{domain}} which could be a strong fit for your business.
 
 Price: {{price}}
 
 Let me know if you're interested.`
+  ]
 };
 
 // ============================================================
@@ -74,6 +79,8 @@ export function createCampaign(data) {
     cpc: data.cpc || '',
     status: data.status || 'draft',
     notes: data.notes || '',
+    subjects: data.subjects || [...EMAIL_TEMPLATE.subjects],
+    messages: data.messages || [...EMAIL_TEMPLATE.messages],
     createdAt: new Date().toISOString()
   };
   
@@ -94,7 +101,9 @@ export function updateCampaign(id, data) {
     backlinks: data.backlinks !== undefined ? data.backlinks : campaign.backlinks,
     cpc: data.cpc !== undefined ? data.cpc : campaign.cpc,
     status: data.status !== undefined ? data.status : campaign.status,
-    notes: data.notes !== undefined ? data.notes : campaign.notes
+    notes: data.notes !== undefined ? data.notes : campaign.notes,
+    subjects: data.subjects !== undefined ? data.subjects : campaign.subjects,
+    messages: data.messages !== undefined ? data.messages : campaign.messages
   });
   
   saveCampaigns();
