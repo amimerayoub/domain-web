@@ -992,3 +992,24 @@ input,select,textarea{font-family:inherit;color:var(--text-input)}
   .features-grid{grid-template-columns:1fr}
   .overview-section{padding:16px}
 }
+
+/* ============================================================
+   Campaign Manager Styles
+   ============================================================ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-content{background:var(--bg-secondary);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:20px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg);transform:translateY(10px) scale(.97);transition:transform .25s cubic-bezier(.22,1,.36,1)}
+.modal-overlay.open .modal-content{transform:translateY(0) scale(1)}
+.glass{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+
+.campaign-item-card{display:flex;align-items:center;gap:12px;padding:12px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition)}
+.campaign-item-card:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover)}
+.campaign-item-info{flex:1;min-width:0}
+.campaign-item-name{font-weight:600;font-size:.85rem;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.campaign-item-domain{font-size:.72rem;color:var(--text-tertiary);margin-top:2px}
+.campaign-item-meta{display:flex;align-items:center;gap:8px}
+.campaign-status-badge{padding:3px 8px;border-radius:50px;font-size:.65rem;font-weight:700;text-transform:uppercase}
+.campaign-status-draft{background:rgba(156,163,175,.1);color:#9ca3af}
+.campaign-status-active{background:rgba(96,165,250,.1);color:#60a5fa}
+.campaign-status-sent{background:rgba(74,222,128,.1);color:#4ade80}
+.campaign-status-completed{background:rgba(168,85,247,.1);color:#a855f7}

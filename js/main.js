@@ -8,6 +8,7 @@ import { closeAllActionMenus } from '../components/action-menu.js';
 import { initFavorites, openFavoritesPanel, setFavoritesChangeListener, getFavoritesCount, isFavorite, toggleFavorite } from './favorites.js';
 import { analyzeDomains, filterDomains, detectMode } from './domainAnalyzer.js';
 import { emailState, parseCSVText, parsePastedEmails, cleanContacts, startCampaign, pauseCampaign, resumeCampaign, stopCampaign, resetCampaign, generatePreview, getDelay } from './emailTool.js';
+import { initCampaignManager } from './campaignManager.js';
 import { generateDomainNews, clearCache } from '../services/newsGenOrchestrator.js';
 import { loadAllApiKeys, saveAllApiKeys, loadAiProvider, saveAiProvider } from '../services/apiSettings.js';
 
@@ -1199,6 +1200,9 @@ export async function initApp() {
 
   // ==================== SMART EMAIL TOOL ====================
   initEmailTool();
+  
+  // ==================== CAMPAIGN MANAGER ====================
+  initCampaignManager();
 
   // Analyzer button
   const ba = $('#btnAnalyze'); if (ba) ba.addEventListener('click', handleAnalyze);
