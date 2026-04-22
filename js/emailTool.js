@@ -22,6 +22,9 @@ export const emailState = {
   }
 };
 
+// Reference to current campaign from campaign manager
+let currentCampaignRef = null;
+
 // ============================================================
 // CSV / INPUT PARSING
 // ============================================================
@@ -395,4 +398,82 @@ export function nextPreview() {
 
 export function prevPreview() {
   return setPreviewIndex(emailState.previewIndex - 1);
+}
+
+// ============================================================
+// CAMPAIGN SYNCHRONIZATION
+// ============================================================
+
+// Set current campaign reference from campaign manager
+export function setCurrentCampaign(campaign) {
+  currentCampaignRef = campaign;
+  if (campaign) {
+    // Load campaign data into email state
+    if (campaign.emails && Array.isArray(campaign.emails)) {
+      emailState.contacts = [...campaign.emails];
+    }
+    if (campaign.subjects && Array.isArray(campaign.subjects)) {
+      emailState.subjects = [...campaign.subjects];
+    }
+    if (campaign.messages && Array.isArray(campaign.messages)) {
+      emailState.messages = [...campaign.messages];
+    }
+  }
+  return currentCampaignRef;
+}
+
+// Get current campaign reference
+export function getCurrentCampaign() {
+  return currentCampaignRef;
+}
+
+// Sync email state back to campaign
+export function syncEmailStateToCampaign() {
+  if (!currentCampaignRef) return null;
+  
+  currentCampaignRef.emails = [...emailState.contacts];
+  currentCampaignRef.subjects = [...emailState.subjects];
+  currentCampaignRef.messages = [...emailState.messages];
+  
+  // Update in localStorage via campaignManager
+  if (window.campaignManager && window.campaignManager.updateCampaign) {
+    window.campaignManager.updateCampaign(currentCampaignRef.id, {
+      emails: currentCampaignRef.emails,
+      subjects: currentCampaignRef.subjects,
+      messages: currentCampaignRef.messages
+    });
+  }
+  
+  return currentCampaignRef;
+}
+
+// Check if campaign is valid for sending
+export function isCampaignValid() {
+  return currentCampaignRef !== null && 
+         emailState.contacts.length > 0 && 
+         emailState.subjects.length > 0 && 
+         emailState.messages.length > 0;
+}
+
+// Get validation status message
+export function getCampaignValidationStatus() {
+  const issues = [];
+  
+  if (!currentCampaignRef) {
+    issues.push('No campaign selected');
+  }
+  if (emailState.contacts.length === 0) {
+    issues.push('No emails loaded');
+  }
+  if (emailState.subjects.length === 0) {
+    issues.push('No subjects defined');
+  }
+  if (emailState.messages.length === 0) {
+    issues.push('No messages defined');
+  }
+  
+  return {
+    valid: issues.length === 0,
+    issues: issues
+  };
 }
