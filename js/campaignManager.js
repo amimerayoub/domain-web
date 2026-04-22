@@ -8,6 +8,9 @@ const STORAGE_KEY = 'email_campaigns';
 let campaigns = [];
 let currentCampaignId = null;
 
+// Global reference for email tool synchronization
+export let currentCampaign = null;
+
 // Email template with multiple variants support
 const EMAIL_TEMPLATE = {
   subjects: [
@@ -81,6 +84,7 @@ export function createCampaign(data) {
     notes: data.notes || '',
     subjects: data.subjects || [...EMAIL_TEMPLATE.subjects],
     messages: data.messages || [...EMAIL_TEMPLATE.messages],
+    emails: data.emails || [],
     createdAt: new Date().toISOString()
   };
   
@@ -103,7 +107,8 @@ export function updateCampaign(id, data) {
     status: data.status !== undefined ? data.status : campaign.status,
     notes: data.notes !== undefined ? data.notes : campaign.notes,
     subjects: data.subjects !== undefined ? data.subjects : campaign.subjects,
-    messages: data.messages !== undefined ? data.messages : campaign.messages
+    messages: data.messages !== undefined ? data.messages : campaign.messages,
+    emails: data.emails !== undefined ? data.emails : campaign.emails
   });
   
   saveCampaigns();
@@ -222,6 +227,7 @@ export function openCampaignDetails(id) {
   if (!campaign) return;
   
   currentCampaignId = id;
+  currentCampaign = campaign; // Set global reference
   
   // Fill details
   $('#detailCampaignName').textContent = campaign.name;
@@ -246,9 +252,12 @@ export function openCampaignDetails(id) {
     notesWrap.style.display = 'none';
   }
   
-  // Generate email preview
-  const subject = EMAIL_TEMPLATE.subject.replace('{{domain}}', campaign.domain);
-  const body = EMAIL_TEMPLATE.body
+  // Generate email preview using first subject/message or defaults
+  const subjects = campaign.subjects && campaign.subjects.length ? campaign.subjects : EMAIL_TEMPLATE.subjects;
+  const messages = campaign.messages && campaign.messages.length ? campaign.messages : EMAIL_TEMPLATE.messages;
+  
+  const subject = (subjects[0] || '').replace('{{domain}}', campaign.domain).replace('{{price}}', campaign.price || 'N/A');
+  const body = (messages[0] || '')
     .replace('{{domain}}', campaign.domain)
     .replace('{{price}}', campaign.price || 'N/A');
   
@@ -260,11 +269,50 @@ export function openCampaignDetails(id) {
   openModal('#campaignDetailsModal');
 }
 
+// Load campaign data into email tool UI
+export function loadCampaignIntoEmailTool(id) {
+  const campaign = getCampaignById(id);
+  if (!campaign) return null;
+  
+  currentCampaignId = id;
+  currentCampaign = campaign;
+  
+  // Load emails into contacts
+  const emailState = window.emailState || {};
+  if (emailState.contacts && Array.isArray(campaign.emails)) {
+    emailState.contacts = [...campaign.emails];
+  }
+  
+  // Load subjects
+  if (campaign.subjects && campaign.subjects.length) {
+    const subjectsInput = $('#multipleSubjectsInput');
+    if (subjectsInput) {
+      subjectsInput.value = campaign.subjects.join('\n');
+    }
+  }
+  
+  // Load messages
+  if (campaign.messages && campaign.messages.length) {
+    const messagesInput = $('#multipleMessagesInput');
+    if (messagesInput) {
+      messagesInput.value = campaign.messages.join('\n\n---\n\n');
+    }
+  }
+  
+  // Trigger UI updates for email tool
+  if (window.updateEmailToolUI) {
+    window.updateEmailToolUI();
+  }
+  
+  return campaign;
+}
+
 export function openEditCampaign(id) {
   const campaign = getCampaignById(id);
   if (!campaign) return;
   
   currentCampaignId = id;
+  currentCampaign = campaign;
   
   // Fill form
   $('#campaignId').value = campaign.id;
@@ -277,15 +325,30 @@ export function openEditCampaign(id) {
   $('#campaignStatus').value = campaign.status;
   $('#campaignNotes').value = campaign.notes;
   
+  // Load subjects and messages into form (as joined text for textarea)
+  if (campaign.subjects && campaign.subjects.length) {
+    // Store in a hidden field or data attribute for later use
+    $('#campaignForm').dataset.subjects = JSON.stringify(campaign.subjects);
+  }
+  if (campaign.messages && campaign.messages.length) {
+    $('#campaignForm').dataset.messages = JSON.stringify(campaign.messages);
+  }
+  
   $('#campaignModalTitle').textContent = 'Edit Campaign';
   
   closeModal('#campaignDetailsModal');
   openModal('#campaignModalOverlay');
 }
 
-export function generateGmailLink(campaign) {
-  const subject = encodeURIComponent(EMAIL_TEMPLATE.subject.replace('{{domain}}', campaign.domain));
-  const body = encodeURIComponent(EMAIL_TEMPLATE.body
+export function generateGmailLink(campaign, subjectIdx = 0, messageIdx = 0) {
+  const subjects = campaign.subjects && campaign.subjects.length ? campaign.subjects : EMAIL_TEMPLATE.subjects;
+  const messages = campaign.messages && campaign.messages.length ? campaign.messages : EMAIL_TEMPLATE.messages;
+  
+  const subjectTemplate = subjects[subjectIdx % subjects.length] || subjects[0];
+  const messageTemplate = messages[messageIdx % messages.length] || messages[0];
+  
+  const subject = encodeURIComponent(subjectTemplate.replace('{{domain}}', campaign.domain).replace('{{price}}', campaign.price || 'N/A'));
+  const body = encodeURIComponent(messageTemplate
     .replace('{{domain}}', campaign.domain)
     .replace('{{price}}', campaign.price || 'N/A'));
   
@@ -351,6 +414,22 @@ export function initCampaignManager() {
   $('#campaignForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     
+    // Parse subjects from textarea if in email tool context, or use stored data
+    let subjects = [];
+    let messages = [];
+    
+    // Try to get subjects/messages from form dataset (when editing)
+    if ($('#campaignForm').dataset.subjects) {
+      try {
+        subjects = JSON.parse($('#campaignForm').dataset.subjects);
+      } catch (err) { subjects = []; }
+    }
+    if ($('#campaignForm').dataset.messages) {
+      try {
+        messages = JSON.parse($('#campaignForm').dataset.messages);
+      } catch (err) { messages = []; }
+    }
+    
     const data = {
       name: $('#campaignName').value.trim(),
       domain: $('#campaignDomain').value.trim(),
@@ -359,7 +438,9 @@ export function initCampaignManager() {
       backlinks: $('#campaignBacklinks').value.trim(),
       cpc: $('#campaignCpc').value.trim(),
       status: $('#campaignStatus').value,
-      notes: $('#campaignNotes').value.trim()
+      notes: $('#campaignNotes').value.trim(),
+      subjects: subjects.length ? subjects : undefined,
+      messages: messages.length ? messages : undefined
     };
     
     if (currentCampaignId) {
@@ -397,7 +478,7 @@ export function initCampaignManager() {
   $('#btnSendGmail')?.addEventListener('click', () => {
     const campaign = getCampaignById(currentCampaignId);
     if (campaign) {
-      const url = generateGmailLink(campaign);
+      const url = generateGmailLink(campaign, 0, 0);
       window.open(url, '_blank');
     }
   });
@@ -415,6 +496,10 @@ export function initCampaignManager() {
     openModal('#campaignModalOverlay');
   };
   
+  // Export loadCampaignIntoEmailTool for use by email tool
+  window.loadCampaignIntoEmailTool = loadCampaignIntoEmailTool;
+  window.getCurrentCampaign = () => currentCampaign;
+  
   // Initial render
   renderCampaignQuickList();
 }
@@ -428,5 +513,7 @@ window.campaignManager = {
   getCampaignById,
   openCampaignDetails,
   openEditCampaign,
-  fillCampaignFromDomain: window.fillCampaignFromDomain
+  loadCampaignIntoEmailTool,
+  fillCampaignFromDomain: window.fillCampaignFromDomain,
+  getCurrentCampaign: () => currentCampaign
 };

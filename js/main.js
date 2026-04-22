@@ -7,7 +7,7 @@ import { initCustomSelects, getSelectValue } from '../components/dropdown.js';
 import { closeAllActionMenus } from '../components/action-menu.js';
 import { initFavorites, openFavoritesPanel, setFavoritesChangeListener, getFavoritesCount, isFavorite, toggleFavorite } from './favorites.js';
 import { analyzeDomains, filterDomains, detectMode } from './domainAnalyzer.js';
-import { emailState, parseCSVText, parsePastedEmails, cleanContacts, startCampaign, pauseCampaign, resumeCampaign, stopCampaign, resetCampaign, generatePreview, getDelay, parseSubjects, parseMessages, getSubjectForIndex, getMessageForIndex, getPreviewInfo, setPreviewIndex, nextPreview, prevPreview } from './emailTool.js';
+import { emailState, parseCSVText, parsePastedEmails, cleanContacts, startCampaign, pauseCampaign, resumeCampaign, stopCampaign, resetCampaign, generatePreview, getDelay, parseSubjects, parseMessages, getSubjectForIndex, getMessageForIndex, getPreviewInfo, setPreviewIndex, nextPreview, prevPreview, setCurrentCampaign, getCurrentCampaign, syncEmailStateToCampaign, isCampaignValid, getCampaignValidationStatus } from './emailTool.js';
 import { initCampaignManager } from './campaignManager.js';
 import { generateDomainNews, clearCache } from '../services/newsGenOrchestrator.js';
 import { loadAllApiKeys, saveAllApiKeys, loadAiProvider, saveAiProvider } from '../services/apiSettings.js';
@@ -767,10 +767,17 @@ function initEmailTool() {
   if (btnStart) btnStart.addEventListener('click', () => {
     // Collect subjects and messages
     collectEmailInputs();
-    if (!emailState.subjects.length) { toast('Add at least one subject line'); return; }
-    if (!emailState.messages.length) { toast('Add at least one message'); return; }
-    if (!emailState.contacts.length) { toast('Add email contacts first'); return; }
-
+    
+    // Sync to campaign before starting
+    syncEmailStateToCampaign();
+    
+    // Validate using new validation system
+    const validation = getCampaignValidationStatus();
+    if (!validation.valid) {
+      toast('Please fix: ' + validation.issues.join(', '));
+      return;
+    }
+    
     resetCampaign();
     emailState.contacts = cleanContacts(emailState.contacts);
     emailState.campaign.pending = emailState.contacts.length;
@@ -794,6 +801,9 @@ function initEmailTool() {
         btnStart.style.display = '';
         if (extraBtns) extraBtns.style.display = 'none';
         toast('Campaign complete! ' + emailState.campaign.sent + ' emails sent.');
+        
+        // Sync final state to campaign
+        syncEmailStateToCampaign();
       }
     );
   });
@@ -834,6 +844,69 @@ function initEmailTool() {
   // Initial preview
   updatePreview();
   updateEmailContactSummary();
+  
+  // Campaign synchronization - listen for campaign selection
+  window.updateEmailToolUI = function() {
+    // Called when a campaign is loaded from campaign manager
+    const subjectsInput = $('#multipleSubjectsInput');
+    const messagesInput = $('#multipleMessagesInput');
+    
+    if (subjectsInput && emailState.subjects.length) {
+      subjectsInput.value = emailState.subjects.join('\n');
+    }
+    if (messagesInput && emailState.messages.length) {
+      messagesInput.value = emailState.messages.join('\n\n---\n\n');
+    }
+    
+    updatePreview();
+    updateEmailContactSummary();
+    updateEmailTable();
+    updateEmailStats();
+    validateCampaignButton();
+  };
+  
+  // Validate and update Start Campaign button state
+  function validateCampaignButton() {
+    const btnStart = $('#btnStartCampaign');
+    if (!btnStart) return;
+    
+    const validation = getCampaignValidationStatus();
+    
+    if (validation.valid) {
+      btnStart.disabled = false;
+      btnStart.style.opacity = '1';
+      btnStart.style.cursor = 'pointer';
+    } else {
+      btnStart.disabled = true;
+      btnStart.style.opacity = '0.5';
+      btnStart.style.cursor = 'not-allowed';
+    }
+  }
+  
+  // Listen for input changes to validate button
+  const subjectsInput = $('#multipleSubjectsInput');
+  const messagesInput = $('#multipleMessagesInput');
+  const pasteInput = $('#emailPasteInput');
+  
+  if (subjectsInput) subjectsInput.addEventListener('input', () => {
+    collectEmailInputs();
+    syncEmailStateToCampaign();
+    validateCampaignButton();
+  });
+  
+  if (messagesInput) messagesInput.addEventListener('input', () => {
+    collectEmailInputs();
+    syncEmailStateToCampaign();
+    validateCampaignButton();
+  });
+  
+  if (pasteInput) pasteInput.addEventListener('input', () => {
+    syncEmailStateToCampaign();
+    validateCampaignButton();
+  });
+  
+  // Initial validation
+  validateCampaignButton();
 }
 
 function collectEmailInputs() {
@@ -1193,6 +1266,17 @@ export async function initApp() {
   
   // ==================== CAMPAIGN MANAGER ====================
   initCampaignManager();
+  
+  // Wire up campaign list items to load into email tool
+  document.addEventListener('click', (e) => {
+    const campaignCard = e.target.closest('.campaign-item-card');
+    if (campaignCard) {
+      const id = campaignCard.getAttribute('data-campaign-id');
+      if (id && window.loadCampaignIntoEmailTool) {
+        window.loadCampaignIntoEmailTool(id);
+      }
+    }
+  });
 
   // Analyzer button
   const ba = $('#btnAnalyze'); if (ba) ba.addEventListener('click', handleAnalyze);
